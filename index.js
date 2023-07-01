@@ -112,7 +112,7 @@ swClient.on("message.received", async (incomingMessage) => {
     .then((response) => response.text())
     .then(async (responseData) => {
       console.log("responseData:", responseData);
-      const { feedUrl, isNewFeed } = JSON.parse(responseData);
+      // const { feedUrl, isNewFeed } = JSON.parse(responseData);
       // if (isNewFeed) {
       //   console.log("new feed; sending message")
       //   const confirmationMessage = await swClient.send({
@@ -142,22 +142,22 @@ const outgoingMessage = {
 
 // when the server receives a get request, it will send a post request to the API
 
-app.get("/", (req, res) => {
-  console.log("get request received");
+// app.get("/", (req, res) => {
+//   console.log("get request received");
 
-  fetch(API_POST_ENDPOINT, {
-    method: "post",
-    body: JSON.stringify(outgoingMessage),
-  })
-    .then((response) => response.text())
-    .then((responseData) => {
-      console.log("Successfully posted:", responseData);
-    })
-    .catch((error) => {
-      console.error("Unfortunate error:", error);
-    });
-  res.send("get request received");
-});
+//   fetch(API_POST_ENDPOINT, {
+//     method: "post",
+//     body: JSON.stringify(outgoingMessage),
+//   })
+//     .then((response) => response.text())
+//     .then((responseData) => {
+//       console.log("Successfully posted:", responseData);
+//     })
+//     .catch((error) => {
+//       console.error("Unfortunate error:", error);
+//     });
+//   res.send("get request received");
+// });
 
 // >>>>> start the server <<<<<
 
