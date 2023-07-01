@@ -64,10 +64,21 @@ async function parsePostFromMedia(mediaList) {
   const [_, ...mediaUrls] = mediaList;
 
   const textPath = mediaUrls.find((url) => textFileRegex.exec(url));
+  console.log("textPath: ", textPath)
   const imagePaths = mediaUrls.filter((url) => imageFileRegex.exec(url));
+  console.log("imagePaths: ", imagePaths)
   const images = uploadImages(imagePaths);
-  const textReponse = await axios.get(textPath);
-  const text = textReponse.data ? textReponse.data : "";
+  
+  let text = ""
+
+  if (textPath) {
+    let response = await axios.get(textPath)
+    console.log("text response: ", response)
+    if (response && response.data) {
+      console.log("text response.data: ", response.data)
+      text = response.data
+    }
+  }
   
   let parsed = parsePostFromMessageText(text);
   parsed.media = (await images).map((i) => i.secure_url);
@@ -79,7 +90,7 @@ async function parsePostFromMedia(mediaList) {
 // >>>>> signalwire event listeners <<<<<
 
 swClient.on("message.received", async (incomingMessage) => {
-  const { body, from, media } = incomingMessage;
+  const { body, from, media, to } = incomingMessage;
 
   const post = (media && media.length)
     ? await parsePostFromMedia(media)
@@ -87,6 +98,7 @@ swClient.on("message.received", async (incomingMessage) => {
 
   const outgoingMessage = {
     author: from,
+    to: to,
     date: new Date(),
     ...post,
   };
@@ -98,10 +110,20 @@ swClient.on("message.received", async (incomingMessage) => {
     body: JSON.stringify(outgoingMessage),
   })
     .then((response) => response.text())
-    .then((responseData) => {
-      console.log("Successfully posted:", responseData);
+    .then(async (responseData) => {
+      console.log("responseData:", responseData);
+      const { feedUrl, isNewFeed } = JSON.parse(responseData);
+      // if (isNewFeed) {
+      //   console.log("new feed; sending message")
+      //   const confirmationMessage = await swClient.send({
+      //     to: from,
+      //     from: to,
+      //     body: `Welcome to Folio! Since this is your first post, we've made a website for you here: ${feedUrl}`,
+      //   })
+      //   console.log("confirmationMessage: ", confirmationMessage)
+      // }
     })
-    .catch((error) => {
+        .catch((error) => {
       console.error("Unfortunate error:", error);
     });
 });
