@@ -11,7 +11,7 @@ const axios = require("axios");
 
 // >>>>> initialize signalwire client & set cloudinary config <<<<<
 
-const { PROJECT_ID, API_TOKEN, API_POST_ENDPOINT } = process.env;
+const { PROJECT_ID, API_TOKEN, API_POST_ENDPOINT, SIGNALWIRE_CONTEXT } = process.env;
 const app = express();
 const port = 3001;
 app.use(urlencoded({ extended: true }));
@@ -19,7 +19,7 @@ app.use(urlencoded({ extended: true }));
 const swClient = new Messaging.Client({
   project: PROJECT_ID,
   token: API_TOKEN,
-  contexts: ["text-to-post"],
+  contexts: [SIGNALWIRE_CONTEXT],
 });
 
 cloudinary.config({
@@ -61,21 +61,21 @@ async function uploadImages(imagePaths) {
 // is included with the media, not in the body
 // so we need to parse the text from the media:
 async function parsePostFromMedia(mediaList) {
-  const [_, ...mediaUrls] = mediaList;
+  const [...mediaUrls] = mediaList;
 
   const textPath = mediaUrls.find((url) => textFileRegex.exec(url));
-  console.log("textPath: ", textPath)
+  // console.log("textPath: ", textPath)
   const imagePaths = mediaUrls.filter((url) => imageFileRegex.exec(url));
-  console.log("imagePaths: ", imagePaths)
+  // console.log("imagePaths: ", imagePaths)
   const images = uploadImages(imagePaths);
   
   let text = ""
 
   if (textPath) {
     let response = await axios.get(textPath)
-    console.log("text response: ", response)
+    // console.log("text response: ", response)
     if (response && response.data) {
-      console.log("text response.data: ", response.data)
+      // console.log("text response.data: ", response.data)
       text = response.data
     }
   }
@@ -92,6 +92,8 @@ async function parsePostFromMedia(mediaList) {
 swClient.on("message.received", async (incomingMessage) => {
   const { body, from, media, to, id } = incomingMessage;
 
+  console.log(">>>>>>>>>>>> message received: ", incomingMessage)
+
   const post = (media && media.length)
     ? await parsePostFromMedia(media)
     : parsePostFromMessageText(body);
@@ -104,7 +106,7 @@ swClient.on("message.received", async (incomingMessage) => {
     ...post,
   };
 
-  console.log("outgoingMessage:", outgoingMessage);
+  // console.log("outgoingMessage:", outgoingMessage);
 
   fetch(API_POST_ENDPOINT, {
     method: "post",
@@ -112,7 +114,7 @@ swClient.on("message.received", async (incomingMessage) => {
   })
     .then((response) => response.text())
     .then(async (responseData) => {
-      console.log("responseData:", responseData);
+      // console.log("responseData:", responseData);
       // const { feedUrl, isNewFeed } = JSON.parse(responseData);
       // if (isNewFeed) {
       //   console.log("new feed; sending message")
@@ -131,7 +133,7 @@ swClient.on("message.received", async (incomingMessage) => {
 
 swClient.on("message.updated", async (incomingMessage) => {
   const { body, from, media, to, id } = incomingMessage;
-  console.log("incomingMessage on update:", incomingMessage)
+  console.log(">>>>>>>>>>>>> incomingMessage on update:", incomingMessage)
 
   const post = (media && media.length)
     ? await parsePostFromMedia(media)
@@ -145,7 +147,7 @@ swClient.on("message.updated", async (incomingMessage) => {
     ...post,
   };
 
-  console.log("outgoingMessage on update:", outgoingMessage);
+  // console.log("outgoingMessage on update:", outgoingMessage);
 
   fetch(API_POST_ENDPOINT, {
     method: "PATCH",
@@ -153,7 +155,7 @@ swClient.on("message.updated", async (incomingMessage) => {
   })
     .then((response) => response.text())
     .then(async (responseData) => {
-      console.log("responseData:", responseData);
+      // console.log("responseData:", responseData);
       // const { feedUrl, isNewFeed } = JSON.parse(responseData);
       // if (isNewFeed) {
       //   console.log("new feed; sending message")

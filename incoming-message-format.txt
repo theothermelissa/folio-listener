@@ -1,0 +1,36 @@
+(from Casey)
+>>>>>>>>>>>> message received:  Message {
+  id: 'b5a36be8-389a-4136-b265-1cadb5b48677',
+  state: 'received',
+  context: 'folio-dev',
+  from: '+12567106534',
+  to: '+12546936546',
+  body: null,
+  direction: 'inbound',
+  media: [
+    'https://files.signalwire.com/ca573a42-7be4-43a5-9a88-9a2107803290/659ccdf7-e71b-4732-8a8c-980fe932d5ee/message-media/a27a421f-2634-4685-b407-85100451fa12.xml',
+    'https://files.signalwire.com/ca573a42-7be4-43a5-9a88-9a2107803290/659ccdf7-e71b-4732-8a8c-980fe932d5ee/message-media/cc214d01-024a-4fb6-be23-741d8ba7545d.jpg',
+    'https://files.signalwire.com/ca573a42-7be4-43a5-9a88-9a2107803290/659ccdf7-e71b-4732-8a8c-980fe932d5ee/message-media/df2558b2-ad32-45ea-ab8c-f6d1f7e8cc83.txt'
+  ],
+  segments: 1,
+  tags: [],
+  reason: undefined
+}
+
+(from Ginger)
+>>>>>>>>>>>> message received:  Message {
+  id: 'f2a210af-7ee8-4450-82da-43252577065a',
+  state: 'received',
+  context: 'folio-dev',
+  from: '+12563359837',
+  to: '+12546936546',
+  body: null,
+  direction: 'inbound',
+  media: [
+    'https://files.signalwire.com/ca573a42-7be4-43a5-9a88-9a2107803290/659ccdf7-e71b-4732-8a8c-980fe932d5ee/message-media/8810e5e1-ad73-4ffd-9d98-ae89661e5f7e.jpg'
+  ],
+  segments: 1,
+  tags: [],
+  reason: undefined
+}
+
