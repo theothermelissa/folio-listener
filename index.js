@@ -90,7 +90,7 @@ async function parsePostFromMedia(mediaList) {
 // >>>>> signalwire event listeners <<<<<
 
 swClient.on("message.received", async (incomingMessage) => {
-  const { body, from, media, to } = incomingMessage;
+  const { body, from, media, to, id } = incomingMessage;
 
   const post = (media && media.length)
     ? await parsePostFromMedia(media)
@@ -98,6 +98,7 @@ swClient.on("message.received", async (incomingMessage) => {
 
   const outgoingMessage = {
     author: from,
+    textMesageId: id,
     to: to,
     date: new Date(),
     ...post,
@@ -107,6 +108,47 @@ swClient.on("message.received", async (incomingMessage) => {
 
   fetch(API_POST_ENDPOINT, {
     method: "post",
+    body: JSON.stringify(outgoingMessage),
+  })
+    .then((response) => response.text())
+    .then(async (responseData) => {
+      console.log("responseData:", responseData);
+      // const { feedUrl, isNewFeed } = JSON.parse(responseData);
+      // if (isNewFeed) {
+      //   console.log("new feed; sending message")
+      //   const confirmationMessage = await swClient.send({
+      //     to: from,
+      //     from: to,
+      //     body: `Welcome to Folio! Since this is your first post, we've made a website for you here: ${feedUrl}`,
+      //   })
+      //   console.log("confirmationMessage: ", confirmationMessage)
+      // }
+    })
+        .catch((error) => {
+      console.error("Unfortunate error:", error);
+    });
+});
+
+swClient.on("message.updated", async (incomingMessage) => {
+  const { body, from, media, to, id } = incomingMessage;
+  console.log("incomingMessage on update:", incomingMessage)
+
+  const post = (media && media.length)
+    ? await parsePostFromMedia(media)
+    : parsePostFromMessageText(body);
+
+  const outgoingMessage = {
+    author: from,
+    textMesageId: id,
+    to: to,
+    date: new Date(),
+    ...post,
+  };
+
+  console.log("outgoingMessage on update:", outgoingMessage);
+
+  fetch(API_POST_ENDPOINT, {
+    method: "PATCH",
     body: JSON.stringify(outgoingMessage),
   })
     .then((response) => response.text())
